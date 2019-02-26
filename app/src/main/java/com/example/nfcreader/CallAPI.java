@@ -43,7 +43,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
         String data = dataToPost;
         OutputStream out = null;
 
-        String response = "unset";
+        String response = "";
 
         try {
             URL url = new URL(urlString);
@@ -62,7 +62,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
                 String line;
                 BufferedReader br=new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 while ((line=br.readLine()) != null) {
-                    response+=line;
+                    response += line;
                 }
             }
             else {
@@ -81,7 +81,5 @@ public class CallAPI extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String s) {
         Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
-
-
     }
 }
