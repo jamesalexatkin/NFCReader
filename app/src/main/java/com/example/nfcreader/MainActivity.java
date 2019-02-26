@@ -225,7 +225,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(String result) {
             if (result != null) {
                 mTextView.setText("Read content: '" + result + "'");
-                String expected = "rather splendid cromwell";
+                String expected = "1642203";
 
                 ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                 if (result.equals(expected)) {
