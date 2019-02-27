@@ -228,14 +228,14 @@ public class MainActivity extends Activity {
                 String expected = "1642203";
 
                 ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-                if (result.equals(expected)) {
-                    toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+//                if (result.equals(expected)) {
+//                    toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
                     CallAPI httpPoster = new CallAPI(getApplicationContext(), mTextView, result);
                     httpPoster.execute();
                     //httpPoster.doInBackground("url", "data");
-                } else {
-                    toneGen1.startTone(TONE_CDMA_ABBR_ALERT,6000);
-                }
+//                } else {
+//                    toneGen1.startTone(TONE_CDMA_ABBR_ALERT,6000);
+//                }
             }
         }
     }
