@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">NFC Reader</string>
+    <string-array name="rooms">
+        <item>222</item>
+        <item>225</item>
+    </string-array>
 </resources>

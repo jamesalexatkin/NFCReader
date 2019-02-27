@@ -25,13 +25,17 @@ import javax.net.ssl.HttpsURLConnection;
 public class CallAPI extends AsyncTask<String, String, String> {
 
     Context context;
-    TextView mTextView;
+    TextView txtUnlock;
     String dataToPost;
+    String room;
+    String unlockText = "Room unlocked!";
+    String lockText = "Room stays shut";
 
-    public CallAPI(Context context, TextView mTextView, String dataToPost) {
+    public CallAPI(Context context, TextView txtUnlock, String dataToPost, String room) {
        this.context = context;
-       this.mTextView = mTextView;
+       this.txtUnlock = txtUnlock;
        this.dataToPost = dataToPost;
+       this.room = room;
     }
 
     @Override
@@ -43,7 +47,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
     protected String doInBackground(String... params) {
         //String urlString = params[0]; // URL to call
         //String data = params[1]; //data to post
-        String urlString = "http://52.56.153.134:8080/api/room/222/unlock";
+        String urlString = "http://52.56.153.134:8080/api/room/" + room + "/unlock";
         String data = dataToPost;
         OutputStream out = null;
 
@@ -83,9 +87,9 @@ public class CallAPI extends AsyncTask<String, String, String> {
             JSONObject jsonResponse = new JSONObject(response);
             boolean unlock = jsonResponse.getBoolean("unlock");
             if (unlock) {
-                outputText = "Room unlocked!";
+                outputText = unlockText;
             } else {
-                outputText = "Room stays shut";
+                outputText = lockText;
             }
 
             Log.i("STATUS", String.valueOf(conn.getResponseCode()));
@@ -95,29 +99,6 @@ public class CallAPI extends AsyncTask<String, String, String> {
 
             conn.disconnect();
 
-/*
-            out = new BufferedOutputStream(conn.getOutputStream());
-
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
-            writer.write(data);
-            writer.flush();
-            writer.close();
-            out.close();
-            int responseCode=conn.getResponseCode();
-
-            if (responseCode == HttpsURLConnection.HTTP_OK) {
-                String line;
-                BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                while ((line=br.readLine()) != null) {
-                    response += line;
-                }
-            }
-            else {
-                response="failure";
-
-            }
-
-            conn.connect();*/
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -126,7 +107,12 @@ public class CallAPI extends AsyncTask<String, String, String> {
     }
 
     @Override
-    protected void onPostExecute(String s) {
-        Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+    protected void onPostExecute(String unlocked) {
+        if (unlocked.equals(unlockText)) {
+            txtUnlock.setTextColor(0xFF00FF00);
+        } else {
+            txtUnlock.setTextColor(0xFFFF0000);
+        }
+        txtUnlock.setText(unlocked);
     }
 }

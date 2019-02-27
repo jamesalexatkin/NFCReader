@@ -1,13 +1,10 @@
 package com.example.nfcreader;
 
 import android.app.Activity;
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentFilter.MalformedMimeTypeException;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -16,13 +13,12 @@ import android.nfc.tech.Ndef;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-
-import static android.media.ToneGenerator.TONE_CDMA_ABBR_ALERT;
 
 /**
  * Activity for reading data from an NDEF Tag.
@@ -35,19 +31,22 @@ public class MainActivity extends Activity {
     public static final String MIME_TEXT_PLAIN = "text/plain";
     public static final String TAG = "NfcDemo";
 
-    private TextView mTextView;
-    private NfcAdapter mNfcAdapter;
+    private TextView txtNfcResult;
+    private TextView txtUnlock;
+    private Spinner spinner;
+    private NfcAdapter nfcAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTextView = (TextView) findViewById(R.id.textView_explanation);
+        txtNfcResult = (TextView) findViewById(R.id.textView_explanation);
+        txtUnlock = (TextView) findViewById(R.id.textView_unlocked);
+        spinner = (Spinner) findViewById(R.id.spinner);
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-
-        if (mNfcAdapter == null) {
+        if (nfcAdapter == null) {
             // Stop here, we definitely need NFC
             Toast.makeText(this, "This device doesn't support NFC.", Toast.LENGTH_LONG).show();
             finish();
@@ -55,10 +54,10 @@ public class MainActivity extends Activity {
 
         }
 
-        if (!mNfcAdapter.isEnabled()) {
-            mTextView.setText("NFC is disabled.");
+        if (!nfcAdapter.isEnabled()) {
+            txtNfcResult.setText("NFC is disabled");
         } else {
-            mTextView.setText("oi");
+            txtNfcResult.setText("NFC is enabled");
         }
 
         handleIntent(getIntent());
@@ -72,7 +71,7 @@ public class MainActivity extends Activity {
          * It's important, that the activity is in the foreground (resumed). Otherwise
          * an IllegalStateException is thrown.
          */
-        setupForegroundDispatch(this, mNfcAdapter);
+        setupForegroundDispatch(this, nfcAdapter);
     }
 
     @Override
@@ -80,7 +79,7 @@ public class MainActivity extends Activity {
         /**
          * Call this before onPause, otherwise an IllegalArgumentException is thrown as well.
          */
-        stopForegroundDispatch(this, mNfcAdapter);
+        stopForegroundDispatch(this, nfcAdapter);
 
         super.onPause();
     }
@@ -224,18 +223,11 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(String result) {
             if (result != null) {
-                mTextView.setText("Read content: '" + result + "'");
-                String expected = "1642203";
+                txtNfcResult.setText("NFC result: '" + result + "'");
+                String room = spinner.getSelectedItem().toString();
 
-                ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-//                if (result.equals(expected)) {
-//                    toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
-                    CallAPI httpPoster = new CallAPI(getApplicationContext(), mTextView, result);
-                    httpPoster.execute();
-                    //httpPoster.doInBackground("url", "data");
-//                } else {
-//                    toneGen1.startTone(TONE_CDMA_ABBR_ALERT,6000);
-//                }
+                CallAPI httpPoster = new CallAPI(getApplicationContext(), txtUnlock, result, room);
+                httpPoster.execute();
             }
         }
     }
