@@ -47,7 +47,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
     protected String doInBackground(String... params) {
         //String urlString = params[0]; // URL to call
         //String data = params[1]; //data to post
-        String urlString = "http://52.56.153.134:8080/api/room/" + room + "/unlock";
+        String urlString = "http://sds.samchatfield.com/api/room/" + room + "/unlock";
         String data = dataToPost;
         OutputStream out = null;
 
@@ -64,7 +64,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
             conn.setDoInput(true);
 
             JSONObject jsonParam = new JSONObject();
-            jsonParam.put("studentId", dataToPost);
+            jsonParam.put("userId", dataToPost);
 
             Log.i("JSON", jsonParam.toString());
             DataOutputStream os = new DataOutputStream(conn.getOutputStream());
