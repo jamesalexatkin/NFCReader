@@ -13,6 +13,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -45,11 +46,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... params) {
-        //String urlString = params[0]; // URL to call
-        //String data = params[1]; //data to post
-        String urlString = "http://sds.samchatfield.com/api/room/" + room + "/unlock";
-        String data = dataToPost;
-        OutputStream out = null;
+        String urlString = "http://moot.samchatfield.com/api/room/" + room + "/unlock/" + dataToPost;
 
         String response = "";
         String outputText = "";
@@ -57,22 +54,25 @@ public class CallAPI extends AsyncTask<String, String, String> {
         try {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-            conn.setRequestProperty("Accept","application/json");
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
+//            conn.setRequestMethod("GET");
+////            conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+//            conn.setRequestProperty("Accept","application/json");
+//            conn.setDoOutput(true);
+//            conn.setDoInput(true);
 
-            JSONObject jsonParam = new JSONObject();
-            jsonParam.put("userId", dataToPost);
+//            JSONObject jsonParam = new JSONObject();
+//            jsonParam.put("roomId", room);
+//            jsonParam.put("userId", dataToPost);
 
-            Log.i("JSON", jsonParam.toString());
-            DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-            //os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
-            os.writeBytes(jsonParam.toString());
-
-            os.flush();
-            os.close();
+//            Log.i("JSON", jsonParam.toString());
+//            DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+//            //os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
+////            os.writeBytes(jsonParam.toString());
+//
+//            os.flush();
+//            os.close();
+//
+//            Log.i("RESPONSE", conn.getResponseCode() + ": " + conn.getResponseMessage());
 
             InputStream in = conn.getInputStream();
             InputStreamReader inReader = new InputStreamReader(in);
@@ -99,8 +99,12 @@ public class CallAPI extends AsyncTask<String, String, String> {
 
             conn.disconnect();
 
+        } catch (FileNotFoundException e) {
+            Log.i("EXCEPTION", e.getMessage());
+            outputText = "Booking not found";
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            Log.i("EXCEPTION", e.getMessage());
+            outputText = e.getMessage();
         }
 
         return outputText;
