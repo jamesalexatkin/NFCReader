@@ -71,7 +71,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
             boolean unlock = jsonResponse.getBoolean("unlock");
             if (unlock) {
                 outputText = unlockText;
-                server.nfcUnlockNotify();
+                server.nfcUnlockNotify(room);
             } else {
                 outputText = lockText;
             }

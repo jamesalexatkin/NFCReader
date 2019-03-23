@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
 public class Server {
@@ -17,7 +18,7 @@ public class Server {
     ServerSocket serverSocket;
     static final int socketServerPORT = 1337;
 
-    boolean nfcUnlock = false;
+    private Optional<String> nfcUnlock = Optional.empty();
 
     public Server(MainActivity activity) {
         this.activity = activity;
@@ -39,8 +40,8 @@ public class Server {
         }
     }
 
-    public void nfcUnlockNotify() {
-        nfcUnlock = true;
+    public void nfcUnlockNotify(String room) {
+        nfcUnlock = Optional.of(room);
     }
 
     private class SocketServerThread extends Thread {
@@ -82,18 +83,22 @@ public class Server {
         @Override
         public void run() {
             while (true) {
-                while (!nfcUnlock) {
+                while (!nfcUnlock.isPresent()) {
                     // Block and do nothing while we wait
                 }
-
-                // Send unlock signal to Pi
-                printStream.print(true);
-                Log.i("PI SIGNAL", "Sending unlock signal to Pi");
-
-                setTextViewServerText("Sending unlock signal to Pi");
-
-                nfcUnlock = false;
+                sendUnlockSignal();
             }
+        }
+
+        private void sendUnlockSignal() {
+            String room = nfcUnlock.get();
+            printStream.print(room.length());
+            printStream.print(room);
+
+            Log.i("PI SIGNAL", "Sending unlock signal to Pi");
+            setTextViewServerText("Sending unlock signal to Pi");
+
+            nfcUnlock = Optional.empty();
         }
     }
 
