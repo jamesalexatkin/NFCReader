@@ -26,14 +26,16 @@ import javax.net.ssl.HttpsURLConnection;
 public class CallAPI extends AsyncTask<String, String, String> {
 
     Context context;
+    Server server;
     TextView txtUnlock;
     String dataToPost;
     String room;
     String unlockText = "Room unlocked!";
     String lockText = "Room stays shut";
 
-    public CallAPI(Context context, TextView txtUnlock, String dataToPost, String room) {
+    public CallAPI(Context context, Server server, TextView txtUnlock, String dataToPost, String room) {
        this.context = context;
+       this.server = server;
        this.txtUnlock = txtUnlock;
        this.dataToPost = dataToPost;
        this.room = room;
@@ -54,25 +56,6 @@ public class CallAPI extends AsyncTask<String, String, String> {
         try {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//            conn.setRequestMethod("GET");
-////            conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-//            conn.setRequestProperty("Accept","application/json");
-//            conn.setDoOutput(true);
-//            conn.setDoInput(true);
-
-//            JSONObject jsonParam = new JSONObject();
-//            jsonParam.put("roomId", room);
-//            jsonParam.put("userId", dataToPost);
-
-//            Log.i("JSON", jsonParam.toString());
-//            DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-//            //os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
-////            os.writeBytes(jsonParam.toString());
-//
-//            os.flush();
-//            os.close();
-//
-//            Log.i("RESPONSE", conn.getResponseCode() + ": " + conn.getResponseMessage());
 
             InputStream in = conn.getInputStream();
             InputStreamReader inReader = new InputStreamReader(in);
@@ -88,6 +71,7 @@ public class CallAPI extends AsyncTask<String, String, String> {
             boolean unlock = jsonResponse.getBoolean("unlock");
             if (unlock) {
                 outputText = unlockText;
+                server.nfcUnlockNotify();
             } else {
                 outputText = lockText;
             }

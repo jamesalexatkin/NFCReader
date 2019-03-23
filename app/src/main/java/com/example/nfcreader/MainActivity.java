@@ -33,7 +33,11 @@ public class MainActivity extends Activity {
 
     private TextView txtNfcResult;
     private TextView txtUnlock;
+    public TextView txtServer;
     private Spinner spinner;
+
+    Server server;
+
     private NfcAdapter nfcAdapter;
 
     @Override
@@ -43,7 +47,11 @@ public class MainActivity extends Activity {
 
         txtNfcResult = (TextView) findViewById(R.id.textView_explanation);
         txtUnlock = (TextView) findViewById(R.id.textView_unlocked);
+        txtServer = (TextView) findViewById(R.id.textView_server);
         spinner = (Spinner) findViewById(R.id.spinner);
+
+        server = new Server(this);
+
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (nfcAdapter == null) {
@@ -51,7 +59,6 @@ public class MainActivity extends Activity {
             Toast.makeText(this, "This device doesn't support NFC.", Toast.LENGTH_LONG).show();
             finish();
             return;
-
         }
 
         if (!nfcAdapter.isEnabled()) {
@@ -226,7 +233,7 @@ public class MainActivity extends Activity {
                 txtNfcResult.setText("NFC result: '" + result + "'");
                 String room = spinner.getSelectedItem().toString();
 
-                CallAPI httpPoster = new CallAPI(getApplicationContext(), txtUnlock, result, room);
+                CallAPI httpPoster = new CallAPI(getApplicationContext(), server, txtUnlock, result, room);
                 httpPoster.execute();
             }
         }
