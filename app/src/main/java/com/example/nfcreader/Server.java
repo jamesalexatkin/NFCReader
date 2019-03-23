@@ -15,7 +15,6 @@ import java.util.concurrent.CountDownLatch;
 public class Server {
     MainActivity activity;
     ServerSocket serverSocket;
-    String message = "";
     static final int socketServerPORT = 1337;
 
     boolean nfcUnlock = false;
@@ -45,7 +44,6 @@ public class Server {
     }
 
     private class SocketServerThread extends Thread {
-        int count = 0;
 
         SocketServerReplyThread socketServerReplyThread;
 
@@ -58,10 +56,8 @@ public class Server {
                 while (true) {
                     // block the call until connection is created and return Socket object
                     Socket socket = serverSocket.accept();
-                    count++;
-                    message += "#" + count + " from "
-                            + socket.getInetAddress() + ":"
-                            + socket.getPort() + "\n";
+
+                    setTextViewServerText("Connection established");
 
                     PrintStream printStream = new PrintStream(socket.getOutputStream());
 
@@ -73,7 +69,7 @@ public class Server {
                 e.printStackTrace();
             }
         }
-     }
+    }
 
     private class SocketServerReplyThread extends Thread {
 
@@ -86,22 +82,28 @@ public class Server {
         @Override
         public void run() {
             while (true) {
-                while(!nfcUnlock) {
+                while (!nfcUnlock) {
                     // Block and do nothing while we wait
                 }
 
                 // Send unlock signal to Pi
                 printStream.print(true);
                 Log.i("PI SIGNAL", "Sending unlock signal to Pi");
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activity.txtServer.setText("Sent unlock signal to Pi");
-                    }
-                });
+
+                setTextViewServerText("Sending unlock signal to Pi");
+
                 nfcUnlock = false;
             }
         }
+    }
+
+    private void setTextViewServerText(final String text) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.txtServer.setText(text);
+            }
+        });
     }
 
     public String getIpAddress() {
