@@ -11,14 +11,13 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 
 public class Server {
     MainActivity activity;
     ServerSocket serverSocket;
     static final int socketServerPORT = 1337;
 
-    private Optional<String> nfcUnlock = Optional.empty();
+    private Optional<String> bookingId = Optional.empty();
 
     public Server(MainActivity activity) {
         this.activity = activity;
@@ -40,13 +39,13 @@ public class Server {
         }
     }
 
-    public void nfcUnlockNotify(String room) {
-        nfcUnlock = Optional.of(room);
+    public void nfcUnlockNotify(String bookingId) {
+        this.bookingId = Optional.of(bookingId);
     }
 
     private class SocketServerThread extends Thread {
 
-        SocketServerReplyThread socketServerReplyThread;
+//         socketServerReplyThread;
 
         @Override
         public void run() {
@@ -62,7 +61,7 @@ public class Server {
 
                     PrintStream printStream = new PrintStream(socket.getOutputStream());
 
-                    socketServerReplyThread = new SocketServerReplyThread(printStream);
+                    SocketServerReplyThread socketServerReplyThread = new SocketServerReplyThread(printStream);
                     socketServerReplyThread.run();
 
                 }
@@ -83,7 +82,7 @@ public class Server {
         @Override
         public void run() {
             while (true) {
-                while (!nfcUnlock.isPresent()) {
+                while (!bookingId.isPresent()) {
                     // Block and do nothing while we wait
                 }
                 sendUnlockSignal();
@@ -91,14 +90,14 @@ public class Server {
         }
 
         private void sendUnlockSignal() {
-            String room = nfcUnlock.get();
+            String room = bookingId.get();
             printStream.print(room.length());
             printStream.print(room);
 
             Log.i("PI SIGNAL", "Sending unlock signal to Pi");
             setTextViewServerText("Sending unlock signal to Pi");
 
-            nfcUnlock = Optional.empty();
+            bookingId = Optional.empty();
         }
     }
 

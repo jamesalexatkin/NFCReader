@@ -69,9 +69,11 @@ public class CallAPI extends AsyncTask<String, String, String> {
 
             JSONObject jsonResponse = new JSONObject(response);
             boolean unlock = jsonResponse.getBoolean("unlock");
+            String bookingId = jsonResponse.getString("bookingId");
+
             if (unlock) {
                 outputText = unlockText;
-                server.nfcUnlockNotify(room);
+                server.nfcUnlockNotify(bookingId);
             } else {
                 outputText = lockText;
             }
